@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import './reset.css'
 import './styles.css'
 import { Main, Header } from './App.jsx'
-import { Footer } from './Footer.jsx';
 
   const root = ReactDOM.createRoot(document.getElementById('app'));
   if (root) {
@@ -12,7 +11,6 @@ import { Footer } from './Footer.jsx';
         <>
             <Header />
             <Main />
-            <Footer />
         </>
     );
 

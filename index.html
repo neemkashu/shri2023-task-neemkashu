@@ -195,16 +195,28 @@
     }
 
     const TABS_KEYS = Object.keys(TABS);
+    const ScrollPositions = TABS_KEYS.reduce((accum, key) => {
+        accum[key] = 0;
+        return accum;
+    }, {})
 
-    function TabPanel ({activeTab, deviceKey}) {
+    function TabPanel ({scrollPosition, activeTab, forwardRef }) {
+        React.useEffect(() => {
+            forwardRef.current.scrollLeft = scrollPosition;
+        }, [activeTab])
         return (
-            <div role="tabpanel" className={'section__panel'} aria-hidden={activeTab === deviceKey ? 'false' : 'true'} id={`panel_${key}`} aria-labelledby={`tab_${key}`}>
+            <div
+            ref={forwardRef}
+            role="tabpanel"
+            className={'section__panel'}
+            aria-hidden={'false'}
+            id={`panel_${activeTab}`}
+            aria-labelledby={`tab_${activeTab}`}>
                 <ul className="section__panel-list">
-                    {TABS[deviceKey].items.map((item, index) =>
+                    {TABS[activeTab].items.map((item, index) =>
                         <Event
                             key={index}
                             {...item}
-                            // onSize={onSize}
                         />
                     )}
                 </ul>
@@ -212,19 +224,19 @@
         );
     }
 
-    function Devices ({activeTab}) {
+    const DevicesMemiozed = React.memo( function ({activeTab}) {
         const panelContainer = React.useRef();
         const panelWrapper = React.useRef();
+        const scrollPositions = React.useRef(ScrollPositions);
         const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
         const onArrowCLick = () => {
-            const scroller = panelWrapper.current.querySelector('.section__panel:not(.section__panel_hidden)');
-            if (scroller) {
-                scroller.scrollTo({
-                    left: scroller.scrollLeft + 400,
-                    behavior: 'smooth'
-                });
-            }
+            const newPosition = panelContainer.current.scrollLeft + 400;
+            scrollPositions.current[activeTab] = newPosition;
+            panelContainer.current.scrollTo({
+                left: newPosition,
+                behavior: 'smooth'
+            });
         };
         React.useEffect(() => {
             setHasRightScroll(panelContainer.current.scrollWidth > panelContainer.current.clientWidth)
@@ -232,28 +244,16 @@
 
         return (
             <div ref={panelWrapper} className="section__panel-wrapper">
-                    {TABS_KEYS.map(key => {
-                        console.log('key', key);
-                        return (<div key={key} ref={key===activeTab ? panelContainer : null} role="tabpanel" className={'section__panel' + (key === activeTab ? '' : ' section__panel_hidden')} aria-hidden={key === activeTab ? 'false' : 'true'} id={`panel_${key}`} aria-labelledby={`tab_${key}`}>
-                            <ul className="section__panel-list">
-                                {TABS[key].items.map((item, index) =>
-                                    <Event
-                                        key={index}
-                                        {...item}
-                                    />
-                                )}
-                            </ul>
-                        </div>)}
-                    )}
-                    {hasRightScroll &&
-                        <div className="section__arrow" onClick={onArrowCLick}></div>
-                    }
-                </div>
+                <TabPanel scrollPosition={scrollPositions.current[activeTab]} forwardRef={panelContainer} activeTab={activeTab}/>
+                {hasRightScroll &&
+                    <div className="section__arrow" onClick={onArrowCLick}></div>
+                }
+            </div>
         );
-    }
+    })
+
     function DevicePanel () {
         const [activeTab, setActiveTab] = React.useState(new URLSearchParams(location.search).get('tab') || 'all');
-
 
         const onSelectInput = event => {
             setActiveTab(event.target.value);
@@ -290,7 +290,7 @@
                         )}
                     </ul>
                 </div>
-                <Devices activeTab={activeTab} />
+                <DevicesMemiozed activeTab={activeTab} />
             </section>
         );
     }

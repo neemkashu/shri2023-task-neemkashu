@@ -8,7 +8,6 @@ const config = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  mode: 'production',
   target: 'web',
   module: {
     rules: [
@@ -36,6 +35,13 @@ const config = {
       filename: '[name].css',
     }),
   ],
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    compress: true,
+    port: 9000,
+  },
 };
 
 module.exports = config;

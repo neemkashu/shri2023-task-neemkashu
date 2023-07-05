@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles.css'
 import './reset.css'
-import './fonts.css'
+import './styles.css'
 
 function Header() {
   let [expanded, setExpanded] = React.useState(false);

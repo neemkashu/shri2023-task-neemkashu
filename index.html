@@ -71,27 +71,16 @@
     }
 
     function Event(props) {
-        const ref = React.useRef();
-
-        const { onSize } = props;
-
-        React.useEffect(() => {
-            const width = ref.current.offsetWidth;
-            const height = ref.current.offsetHeight;
-            if (onSize) {
-                onSize({ width, height });
-            }
-        }, [onSize]);
-
-        return <li ref={ref} className={'event' + (props.slim ? ' event_slim' : '')}>
-            <button className="event__button">
-                <span className={`event__icon event__icon_${props.icon}`} role="img" aria-label={props.iconLabel}></span>
-                <h4 className="event__title">{props.title}</h4>
-                {props.subtitle &&
-                    <span className="event__subtitle">{props.subtitle}</span>
-                }
-            </button>
-        </li>;
+        return (
+            <li className={'event' + (props.slim ? ' event_slim' : '')}>
+                <button className="event__button">
+                    <span className={`event__icon event__icon_${props.icon}`} role="img" aria-label={props.iconLabel}></span>
+                    <h4 className="event__title">{props.title}</h4>
+                    {props.subtitle &&
+                        <span className="event__subtitle">{props.subtitle}</span>
+                    }
+                </button>
+            </li>);
     }
 
     const TABS = {
@@ -207,16 +196,29 @@
 
     const TABS_KEYS = Object.keys(TABS);
 
+    function TabPanel ({activeTab, deviceKey}) {
+        return (
+            <div role="tabpanel" className={'section__panel'} aria-hidden={activeTab === deviceKey ? 'false' : 'true'} id={`panel_${key}`} aria-labelledby={`tab_${key}`}>
+                <ul className="section__panel-list">
+                    {TABS[deviceKey].items.map((item, index) =>
+                        <Event
+                            key={index}
+                            {...item}
+                            // onSize={onSize}
+                        />
+                    )}
+                </ul>
+            </div>
+        );
+    }
+
     function Devices ({activeTab}) {
-        const ref = React.useRef();
+        const panelContainer = React.useRef();
+        const panelWrapper = React.useRef();
         const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
-        let sizes = [];
-        const onSize = size => {
-            sizes = [...sizes, size];
-        };
         const onArrowCLick = () => {
-            const scroller = ref.current.querySelector('.section__panel:not(.section__panel_hidden)');
+            const scroller = panelWrapper.current.querySelector('.section__panel:not(.section__panel_hidden)');
             if (scroller) {
                 scroller.scrollTo({
                     left: scroller.scrollLeft + 400,
@@ -224,31 +226,24 @@
                 });
             }
         };
-
         React.useEffect(() => {
-            const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
-            const sumHeight = sizes.reduce((acc, item) => acc + item.height, 0);
-
-            const newHasRightScroll = sumWidth > ref.current.offsetWidth;
-            if (newHasRightScroll !== hasRightScroll) {
-                setHasRightScroll(newHasRightScroll);
-            }
-        });
+            setHasRightScroll(panelContainer.current.scrollWidth > panelContainer.current.clientWidth)
+        }, [activeTab])
 
         return (
-            <div className="section__panel-wrapper" ref={ref}>
-                    {TABS_KEYS.map(key =>
-                        <div key={key} role="tabpanel" className={'section__panel' + (key === activeTab ? '' : ' section__panel_hidden')} aria-hidden={key === activeTab ? 'false' : 'true'} id={`panel_${key}`} aria-labelledby={`tab_${key}`}>
+            <div ref={panelWrapper} className="section__panel-wrapper">
+                    {TABS_KEYS.map(key => {
+                        console.log('key', key);
+                        return (<div key={key} ref={key===activeTab ? panelContainer : null} role="tabpanel" className={'section__panel' + (key === activeTab ? '' : ' section__panel_hidden')} aria-hidden={key === activeTab ? 'false' : 'true'} id={`panel_${key}`} aria-labelledby={`tab_${key}`}>
                             <ul className="section__panel-list">
                                 {TABS[key].items.map((item, index) =>
                                     <Event
                                         key={index}
                                         {...item}
-                                        onSize={onSize}
                                     />
                                 )}
                             </ul>
-                        </div>
+                        </div>)}
                     )}
                     {hasRightScroll &&
                         <div className="section__arrow" onClick={onArrowCLick}></div>
@@ -257,15 +252,8 @@
         );
     }
     function DevicePanel () {
-        const initedRef = React.useRef(false);
         const [activeTab, setActiveTab] = React.useState(new URLSearchParams(location.search).get('tab') || 'all');
 
-        // React.useEffect(() => {
-        //     if (!activeTab && !initedRef.current) {
-        //         initedRef.current = true;
-        //         setActiveTab(new URLSearchParams(location.search).get('tab') || 'all');
-        //     }
-        // }, [activeTab]);
 
         const onSelectInput = event => {
             setActiveTab(event.target.value);

@@ -258,14 +258,14 @@
     }
     function DevicePanel () {
         const initedRef = React.useRef(false);
-        const [activeTab, setActiveTab] = React.useState(new URLSearchParams(location.search).get('tab') || 'all');
+        const [activeTab, setActiveTab] = React.useState('');
 
-        // React.useEffect(() => {
-        //     if (!activeTab && !initedRef.current) {
-        //         initedRef.current = true;
-        //         setActiveTab(new URLSearchParams(location.search).get('tab') || 'all');
-        //     }
-        // }, [activeTab]);
+        React.useEffect(() => {
+            if (!activeTab && !initedRef.current) {
+                initedRef.current = true;
+                setActiveTab(new URLSearchParams(location.search).get('tab') || 'all');
+            }
+        }, [activeTab]);
 
         const onSelectInput = event => {
             setActiveTab(event.target.value);

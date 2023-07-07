@@ -7,6 +7,7 @@ const config = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: '[name][ext]'
   },
   target: 'web',
   module: {
@@ -24,6 +25,15 @@ const config = {
       {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.svg$/,
+        include: [
+          // will include any paths relative to the current directory starting with `app/styles`
+          // e.g. `app/styles.css`, `app/styles/styles.css`, `app/stylesheet.css`
+          path.resolve(__dirname, 'src/assets/svg/'),
+        ],
+        use: ['@svgr/webpack'],
       },
     ],
   },

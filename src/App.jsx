@@ -195,12 +195,12 @@ const DevicesMemiozed = memo( function ({activeTab}) {
   const [hasRightScroll, setHasRightScroll] = useState(true);
 
   const onArrowCLick = () => {
-      const newPosition = panelContainer.current.scrollLeft + 400;
-      scrollPositions.current[activeTab] = newPosition;
-      panelContainer.current.scrollTo({
-          left: newPosition,
-          behavior: 'smooth'
-      });
+    //   const newPosition = panelContainer.current.scrollLeft + 0;
+    //   scrollPositions.current[activeTab] = newPosition;
+    //   panelContainer.current.scrollTo({
+    //       left: newPosition,
+    //       behavior: 'smooth'
+    //   });
   };
   console.log('devices reload', activeTab);
   useEffect(() => {

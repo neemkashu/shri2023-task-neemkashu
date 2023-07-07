@@ -102,7 +102,7 @@ body {
   width: 6.75rem;
   height: 2.3125rem;
   margin-right: 3.25rem;
-  /* background: no-repeat 50% 50% url(assets/logo.svg); */
+  background: no-repeat 50% 50% url(logo.svg);
   background-size: contain;
 }
 
@@ -112,7 +112,7 @@ body {
   height: 100%;
   margin: 0 0 0 auto;
   padding: 0;
-  background: 50% 50% no-repeat;
+  background: 50% 50% no-repeat transparent url(icon_list_m@1x.svg);
   border: none;
   border-radius: 0;
   appearance: none;
@@ -592,7 +592,7 @@ body {
   right: 0;
   width: 18px;
   bottom: 10px;
-  background: no-repeat 50% 50% url(arrow-left.png);
+  background: no-repeat 50% 50% url(arrow-left.webp);
   transform: rotate(180deg);
   cursor: pointer;
 }
